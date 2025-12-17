@@ -1,4 +1,4 @@
-# ogp-cheker
+# ogp-peek
 OGPをチェックするツール
 
-https://ogp-cheker.vercel.app/
+https://ogp-peek.vercel.app/
