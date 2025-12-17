@@ -12,7 +12,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
-  padding: 20px;
+  padding: 0;
   line-height: 1.6;
   min-height: 100vh;
   display: grid;
@@ -21,6 +21,7 @@ body {
 }
 
 main {
+  width: 100%;
   max-width: calc(100vw - 40px);
   margin: 0 auto;
 }
@@ -180,7 +181,6 @@ th {
 .card-host {
   font-size: 13px;
   color: #536471;
-  text-transform: uppercase;
 }
 
 /* 状態表示 */
