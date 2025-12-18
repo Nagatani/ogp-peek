@@ -38,7 +38,36 @@ export default async function handler(req, res) {
         throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
       }
 
-      html = await response.text();
+      // Bufferとして取得
+      const buffer = await response.arrayBuffer();
+
+      // エンコーディングを検出
+      let encoding = 'utf-8';
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('charset=')) {
+        encoding = contentType.split('charset=')[1].split(';')[0].trim();
+      } else {
+        // ヘッダーにない場合、HTML内のmetaタグを探す (最初の1024バイト程度を確認)
+        const partial = new TextDecoder('utf-8').decode(buffer.slice(0, 1024));
+        const metaCharset = partial.match(/<meta\s+charset=["']?([\w-]+)["']?/i);
+        const metaContentType = partial.match(/<meta\s+http-equiv=["']Content-Type["']\s+content=["'].*charset=([\w-]+)["']/i);
+
+        if (metaCharset) {
+          encoding = metaCharset[1];
+        } else if (metaContentType) {
+          encoding = metaContentType[1];
+        }
+      }
+
+      // デコード
+      try {
+        const decoder = new TextDecoder(encoding);
+        html = decoder.decode(buffer);
+      } catch (e) {
+        console.warn(`Failed to decode with ${encoding}, falling back to utf-8`);
+        const decoder = new TextDecoder('utf-8');
+        html = decoder.decode(buffer);
+      }
 
       // meta refreshチェック
       // <meta http-equiv="refresh" content="0;URL=https://example.com" />
